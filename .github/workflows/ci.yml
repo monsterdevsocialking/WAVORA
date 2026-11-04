@@ -23,6 +23,19 @@ jobs:
           cache: pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Inventory dependency licenses
+        run: |
+          pnpm licenses list --recursive --json --long > /tmp/wavora-dependency-licenses.json
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const report = JSON.parse(fs.readFileSync('/tmp/wavora-dependency-licenses.json', 'utf8'));
+          for (const [license, packages] of Object.entries(report)) {
+            console.log(`LICENSE ${license}: ${packages.length} package(s)`);
+            for (const item of packages) {
+              console.log(`  - ${item.name}@${(item.versions ?? []).join(', ')}`);
+            }
+          }
+          NODE
       - name: Build all packages
         run: pnpm build
       - name: Type check
