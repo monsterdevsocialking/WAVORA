@@ -509,5 +509,5 @@ function normalizeHex(input: string): string {
   if (/^#[0-9a-f]{3}$/i.test(s)) {
     return `#${s[1]}${s[1]}${s[2]}${s[2]}${s[3]}${s[3]}`;
   }
-  return "#7c7cff";
+  return "#A3E635";
 }
