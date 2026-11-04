@@ -1,0 +1,75 @@
+name: Bootstrap WAVORA from Cymatic
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/import-cymatic.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: wavora-upstream-bootstrap
+  cancel-in-progress: false
+
+jobs:
+  import-engine:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout WAVORA
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Fetch upstream Cymatic
+        run: git clone --depth 1 https://github.com/coreyepstein/cymatic.git /tmp/cymatic
+
+      - name: Import upstream source and preserve WAVORA identity
+        shell: bash
+        run: |
+          cp /tmp/cymatic/README.md UPSTREAM-README.md
+          rsync -a --exclude='.git' --exclude='README.md' /tmp/cymatic/ ./
+          cat > THIRD-PARTY-NOTICES.md <<'EOF'
+          # Third-party notices
+
+          ## Cymatic
+
+          WAVORA incorporates and adapts the open-source Cymatic project:
+          https://github.com/coreyepstein/cymatic
+
+          Copyright (c) 2026 Corey Epstein. Distributed under the MIT License.
+          The complete upstream license text is preserved in the root LICENSE file.
+          The upstream README is preserved as UPSTREAM-README.md.
+
+          ## Dependencies
+
+          Exact dependency versions are recorded in pnpm-lock.yaml and package manifests.
+          The lockfile does not itself provide a complete legal license inventory for every
+          transitive package. A resolved dependency-license report must be generated and
+          reviewed before commercial redistribution. No dependency is declared approved
+          solely on the basis of its package name.
+
+          ## Assets
+
+          No third-party stock images, music, video clips, or proprietary brand assets are
+          introduced by this bootstrap. Any later asset or font addition must be recorded
+          here with its source and license.
+          EOF
+
+          node --input-type=module <<'EOF'
+          import fs from 'node:fs';
+          const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+          pkg.name = 'wavora-studio';
+          pkg.description = 'WAVORA Studio — Transforma música em movimento.';
+          fs.writeFileSync('package.json', JSON.stringify(pkg, null, 2) + '\n');
+          EOF
+
+      - name: Commit imported engine
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: import Cymatic engine as WAVORA foundation"
+          git push origin main
