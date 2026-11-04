@@ -8,13 +8,12 @@ import {
   type JSX,
 } from "react";
 
-import { version as coreVersion } from "@WAVORA/core";
-import { allPresets } from "@WAVORA/presets";
-import { Visualizer, type VisualizerRef } from "@WAVORA/react";
-import type { DirectorState, ParamSet, Preset, PresetDefinition } from "@WAVORA/core";
+import { version as coreVersion } from "@cymatic/core";
+import { allPresets } from "@cymatic/presets";
+import { Visualizer, type VisualizerRef } from "@cymatic/react";
+import type { DirectorState, ParamSet, Preset, PresetDefinition } from "@cymatic/core";
 
 import { ControlPanel } from "./ControlPanel.js";
-import { buildSnippet } from "./snippet.js";
 
 const DOCS_URL = "https://github.com/monsterdevsocialking/WAVORA#readme";
 const GITHUB_URL = "https://github.com/monsterdevsocialking/WAVORA";
