@@ -32,7 +32,7 @@ async function decodeFile(file: File): Promise<AudioBuffer> {
     (window as unknown as { webkitAudioContext?: typeof AudioContext })
       .webkitAudioContext;
   if (!AudioCtx) {
-    throw new Error("Web Audio API is not available in this browser.");
+    throw new Error("A Web Audio API não está disponível neste navegador.");
   }
   const ctx = new AudioCtx();
   try {
@@ -305,7 +305,7 @@ export function App(): JSX.Element {
                 directorEnabled={directorEnabled}
                 directorSeed={seed}
                 onDirectorState={onDirectorState}
-                ariaLabel={`${selectedDef?.name ?? "WAVORA"} visualizer`}
+                ariaLabel={`${selectedDef?.name ?? "WAVORA"} visualizador`}
               />
               <ControlPanel
                 getParamSet={getParamSet}
@@ -363,7 +363,7 @@ export function App(): JSX.Element {
             type="file"
             accept="audio/*"
             className="visually-hidden"
-            aria-label="Choose audio file"
+            aria-label="Importar ficheiro de áudio"
             onChange={(e) => {
               const file = e.target.files?.[0];
               if (file) void handleFile(file);
