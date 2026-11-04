@@ -142,8 +142,8 @@ export function App(): JSX.Element {
     } catch (err) {
       setInputError(
         err instanceof Error
-          ? `Could not decode "${file.name}": ${err.message}`
-          : `Could not decode "${file.name}".`,
+          ? `Não foi possível abrir "${file.name}": ${err.message}`
+          : `Não foi possível abrir "${file.name}".`,
       );
     }
   }, []);
@@ -216,6 +216,27 @@ export function App(): JSX.Element {
       </header>
 
       <aside className="sidebar">
+        <section className="media-library">
+          <div className="sidebar-title">Biblioteca de mídia</div>
+          <button
+            type="button"
+            className="media-import"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <span aria-hidden="true">＋</span> Importar áudio
+          </button>
+          {input.kind === "file" ? (
+            <div className="media-item">
+              <span className="media-item-icon" aria-hidden="true">♫</span>
+              <div className="media-item-copy">
+                <strong>{input.name}</strong>
+                <span>{formatTime(input.buffer.duration)} · Áudio local</span>
+              </div>
+            </div>
+          ) : (
+            <p className="media-empty">Os teus ficheiros de áudio aparecem aqui.</p>
+          )}
+        </section>
         <div className="sidebar-title">
           Visualizadores · {presets.length}
         </div>
@@ -265,7 +286,7 @@ export function App(): JSX.Element {
           {!backendAvailable ? (
             <div className="status-overlay">
               <div className="status-card error">
-                <h3>No graphics backend available</h3>
+                <h3>Motor gráfico indisponível</h3>
                 <p>
                   Este navegador não disponibiliza WebGPU nem WebGL. O preview
                   precisa de aceleração gráfica para funcionar. Ativa a aceleração
@@ -297,21 +318,21 @@ export function App(): JSX.Element {
               {isMicError ? (
                 <div className="status-overlay">
                   <div className="status-card error">
-                    <h3>Microphone unavailable</h3>
+                    <h3>Microfone indisponível</h3>
                     <p>
                       {engineError?.message ||
-                        "Microphone access was denied or is not available."}{" "}
-                      You can still drop in an audio file to visualize instead.
+                        "O acesso ao microfone foi recusado ou não está disponível."}{" "}
+                      Podes importar um ficheiro de áudio em alternativa.
                     </p>
                   </div>
                 </div>
               ) : isRendererError ? (
                 <div className="status-overlay">
                   <div className="status-card error">
-                    <h3>Renderer unavailable</h3>
+                    <h3>Renderer indisponível</h3>
                     <p>
                       {engineError?.message ||
-                        "The graphics renderer failed to initialize."}{" "}
+                        "Não foi possível iniciar o motor gráfico."}{" "}
                       The live canvas cannot render in this browser — try a
                       hardware-accelerated browser with WebGPU or WebGL enabled.
                     </p>
@@ -322,21 +343,14 @@ export function App(): JSX.Element {
           ) : (
             <div className="status-overlay">
               <div className="status-card">
-                <h3>No preset selected</h3>
-                <p>Choose a preset from the list to begin.</p>
+                <h3>Nenhum visualizador selecionado</h3>
+                <p>Escolhe um visualizador na biblioteca para começar.</p>
               </div>
             </div>
           )}
         </div>
 
         <div className="controls">
-          <button
-            type="button"
-            className="btn"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            Importar música
-          </button>
           <button
             type="button"
             className={`btn${micActive ? " primary active" : " primary"}`}
@@ -366,7 +380,7 @@ export function App(): JSX.Element {
             ) : engineError && input.kind === "mic" ? (
               <>
                 <span className="dot error" />
-                Mic blocked — drop a file instead
+                Microfone bloqueado — importa um ficheiro
               </>
             ) : input.kind === "mic" ? (
               <>
