@@ -149,11 +149,11 @@ describe("ControlPanel", () => {
   it("director toggle calls back, and the seed input forwards changes", async () => {
     const { onToggleDirector, onSeedChange } = renderPanel();
 
-    const toggle = screen.getByLabelText("Auto-director") as HTMLInputElement;
+    const toggle = screen.getByLabelText("Direção automática") as HTMLInputElement;
     fireEvent.click(toggle);
     expect(onToggleDirector).toHaveBeenCalledWith(false);
 
-    const seedInput = screen.getByLabelText("Director seed") as HTMLInputElement;
+    const seedInput = screen.getByLabelText("Semente da direção") as HTMLInputElement;
     fireEvent.change(seedInput, { target: { value: "1234" } });
     expect(onSeedChange).toHaveBeenCalledWith(1234);
   });
@@ -167,7 +167,7 @@ describe("ControlPanel", () => {
 
   it("collapses to free up the canvas", () => {
     renderPanel();
-    const toggle = screen.getByLabelText(/collapse control panel/i);
+    const toggle = screen.getByLabelText(/recolher painel de propriedades/i);
     fireEvent.click(toggle);
     // Collapsed: the parameter section is unmounted.
     expect(screen.queryByTestId("randomize")).toBeNull();
@@ -177,7 +177,7 @@ describe("ControlPanel", () => {
     const empty = createParamSet([]);
     renderPanel({ getParamSet: () => empty });
     await waitFor(() => {
-      expect(screen.getByText(/exposes no parameters/i)).toBeTruthy();
+      expect(screen.getByText(/não disponibiliza parâmetros ajustáveis/i)).toBeTruthy();
     });
   });
 });
