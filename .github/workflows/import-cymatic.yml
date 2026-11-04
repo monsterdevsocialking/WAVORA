@@ -8,7 +8,6 @@ on:
 
 permissions:
   contents: write
-  workflows: write
 
 concurrency:
   group: wavora-upstream-bootstrap
@@ -31,7 +30,7 @@ jobs:
         shell: bash
         run: |
           cp /tmp/cymatic/README.md UPSTREAM-README.md
-          rsync -a --exclude='.git' --exclude='README.md' /tmp/cymatic/ ./
+          rsync -a --exclude='.git' --exclude='.github' --exclude='README.md' /tmp/cymatic/ ./
           cat > THIRD-PARTY-NOTICES.md <<'EOF'
           # Third-party notices
 
