@@ -572,7 +572,7 @@ a {
 
 .switch input:checked + .switch-track {
   background: var(--accent-soft);
-  border-color: rgba(124, 124, 255, 0.5);
+  border-color: rgba(163, 230, 53, 0.5);
 }
 
 .switch input:checked + .switch-track::after {
