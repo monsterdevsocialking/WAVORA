@@ -60,7 +60,7 @@ function groupSchema(
   const order: string[] = [];
   const byGroup = new Map<string, ParamSchema[]>();
   for (const p of schema) {
-    const g = p.group ?? "Parameters";
+    const g = p.group ?? "Parâmetros";
     if (!byGroup.has(g)) {
       byGroup.set(g, []);
       order.push(g);
@@ -203,12 +203,12 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
   return (
     <div className={`panel${collapsed ? " collapsed" : ""}`} data-testid="control-panel">
       <div className="panel-header">
-        <span className="panel-title">Director &amp; Params</span>
+        <span className="panel-title">Direção &amp; Parâmetros</span>
         <button
           type="button"
           className="panel-toggle"
           aria-expanded={!collapsed}
-          aria-label={collapsed ? "Expand control panel" : "Collapse control panel"}
+          aria-label={collapsed ? "Expandir painel de propriedades" : "Recolher painel de propriedades"}
           onClick={() => setCollapsed((c) => !c)}
         >
           {collapsed ? "▸" : "▾"}
@@ -220,40 +220,40 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
           {/* ---- Director controls + HUD ---- */}
           <section className="panel-section" data-testid="director-hud">
             <div className="panel-section-head">
-              <span>Director</span>
+              <span>Direção automática</span>
               <label className="switch">
                 <input
                   type="checkbox"
                   checked={directorEnabled}
                   onChange={(e) => onToggleDirector(e.target.checked)}
-                  aria-label="Auto-director"
+                  aria-label="Direção automática"
                 />
                 <span className="switch-track" aria-hidden="true" />
-                <span className="switch-label">{directorEnabled ? "Auto" : "Off"}</span>
+                <span className="switch-label">{directorEnabled ? "Auto" : "Desligado"}</span>
               </label>
             </div>
 
             <div className="hud">
               <div className="hud-row">
-                <span className="hud-key">Section</span>
+                <span className="hud-key">Secção</span>
                 <span className="hud-val hud-section" data-testid="hud-section">
                   {hud ? pretty(hud.section) : "—"}
                 </span>
               </div>
-              <Meter label="Intensity" value={hud?.intensity ?? 0} testid="hud-intensity" />
+              <Meter label="Intensidade" value={hud?.intensity ?? 0} testid="hud-intensity" />
               <Meter
-                label="Energy"
+                label="Energia"
                 value={director ? clamp01(directorEnergy(director)) : 0}
                 testid="hud-energy"
               />
               <Meter
-                label="Brightness"
+                label="Brilho"
                 value={director ? clamp01(director.contrast) : 0}
                 testid="hud-brightness"
               />
-              <Meter label="Motion" value={hud ? clamp01((hud.motion - 0.5) / 1.5) : 0} />
+              <Meter label="Movimento" value={hud ? clamp01((hud.motion - 0.5) / 1.5) : 0} />
               <div className="hud-row">
-                <span className="hud-key">Palette</span>
+                <span className="hud-key">Paleta</span>
                 <span className="hud-val hud-palette" data-testid="hud-palette">
                   {pretty(paletteName)}
                 </span>
@@ -262,7 +262,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
 
             <div className="seed-row">
               <label className="seed-label" htmlFor="director-seed">
-                Seed
+                Semente
               </label>
               <input
                 id="director-seed"
@@ -273,10 +273,10 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                   const v = Number(e.target.value);
                   if (Number.isFinite(v)) onSeedChange(v >>> 0);
                 }}
-                aria-label="Director seed"
+                aria-label="Semente da direção"
               />
               <button type="button" className="mini-btn" onClick={shuffleSeed}>
-                Shuffle
+                Baralhar
               </button>
             </div>
           </section>
@@ -284,7 +284,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
           {/* ---- Parameter panel ---- */}
           <section className="panel-section">
             <div className="panel-section-head">
-              <span>Parameters</span>
+              <span>Parâmetros</span>
               <div className="param-actions">
                 <button
                   type="button"
@@ -293,7 +293,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                   disabled={schema.length === 0}
                   data-testid="randomize"
                 >
-                  Randomize
+                  Aleatorizar
                 </button>
                 <button
                   type="button"
@@ -301,13 +301,13 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                   onClick={resetAll}
                   disabled={schema.length === 0}
                 >
-                  Reset all
+                  Repor tudo
                 </button>
               </div>
             </div>
 
             {schema.length === 0 ? (
-              <p className="panel-empty">This preset exposes no parameters.</p>
+              <p className="panel-empty">Este visualizador não disponibiliza parâmetros ajustáveis.</p>
             ) : (
               groups.map(({ group, params }) => (
                 <div className="param-group" key={group}>
@@ -395,7 +395,7 @@ function ParamControl({
             className={`mode-btn${mode === "auto" ? " active" : ""}`}
             onClick={onReset}
             aria-pressed={mode === "auto"}
-            title="Re-bind to the preset's default (audio/director)"
+            title="Restaurar a automação padrão do áudio e da direção"
           >
             Auto
           </button>
@@ -509,5 +509,5 @@ function normalizeHex(input: string): string {
   if (/^#[0-9a-f]{3}$/i.test(s)) {
     return `#${s[1]}${s[1]}${s[2]}${s[2]}${s[3]}${s[3]}`;
   }
-  return "#7c7cff";
+  return "#A3E635";
 }
