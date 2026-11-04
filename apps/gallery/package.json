@@ -1,7 +1,7 @@
 {
-  "name": "@cymatic/gallery",
+  "name": "@wavora/studio",
   "version": "0.0.0",
-  "description": "Gallery app showcasing cymatic visualizers.",
+  "description": "WAVORA Studio — Transforma música em movimento.",
   "license": "MIT",
   "author": "Corey Epstein",
   "type": "module",
