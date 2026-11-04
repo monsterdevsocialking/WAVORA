@@ -226,10 +226,10 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                   type="checkbox"
                   checked={directorEnabled}
                   onChange={(e) => onToggleDirector(e.target.checked)}
-                  aria-label="Auto-director"
+                  aria-label="Direção automática"
                 />
                 <span className="switch-track" aria-hidden="true" />
-                <span className="switch-label">{directorEnabled ? "Auto" : "Off"}</span>
+                <span className="switch-label">{directorEnabled ? "Auto" : "Desligado"}</span>
               </label>
             </div>
 
@@ -262,7 +262,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
 
             <div className="seed-row">
               <label className="seed-label" htmlFor="director-seed">
-                Seed
+                Semente
               </label>
               <input
                 id="director-seed"
@@ -276,7 +276,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                 aria-label="Semente da direção"
               />
               <button type="button" className="mini-btn" onClick={shuffleSeed}>
-                Shuffle
+                Baralhar
               </button>
             </div>
           </section>
@@ -293,7 +293,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                   disabled={schema.length === 0}
                   data-testid="randomize"
                 >
-                  Randomize
+                  Aleatorizar
                 </button>
                 <button
                   type="button"
@@ -301,7 +301,7 @@ export function ControlPanel(props: ControlPanelProps): JSX.Element {
                   onClick={resetAll}
                   disabled={schema.length === 0}
                 >
-                  Reset all
+                  Repor tudo
                 </button>
               </div>
             </div>
