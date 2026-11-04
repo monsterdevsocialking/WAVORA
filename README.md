@@ -1,42 +1,30 @@
 # WAVORA Studio
 
-**Transforma música em movimento.**
+**Cria vídeos musicais. Dá vida ao som.**
 
-WAVORA Studio is a browser-based music visualization editor built on top of the open-source [Cymatic](https://github.com/coreyepstein/cymatic) engine.
+WAVORA Studio is a browser-based music-video creation workspace. It is being rebuilt around music-reactive visuals, editable typography, custom image/video backgrounds and downloadable video output.
 
-## Current implementation
+## Music editor — current build
 
-- Local audio import using the browser's Web Audio API (files are decoded in the browser; no audio upload backend).
-- Live microphone input, subject to browser permission and secure-context requirements.
-- The upstream preset catalog, including cinematic geometry, color fields, particles, fluid and 3D point-cloud looks.
-- Real-time audio analysis: FFT bands, bass/mid/treble, RMS, onsets, tempo and spectral features.
-- Automatic director for section-aware intensity, movement and palette evolution.
-- Per-preset parameter panel with auto/manual binding, randomization and reset.
-- WebGPU renderer with WebGL fallback.
-- Local waveform overview generated from the decoded audio buffer.
-- Responsive dark WAVORA interface using the brand palette.
+- Import local audio files supported by the browser and play/pause/seek the track.
+- Five live visual styles: frequency bars, circular spectrum, waveform, particles and mirrored spectrum.
+- Audio-reactive rendering using the Web Audio API analyser.
+- Custom color palettes, sensitivity, bar count and glow controls.
+- Import a local image or video as the visual background; adjust the background dimming.
+- Add/edit the track title and artist name, show/hide text and change title size.
+- Composition aspect ratios for 16:9, 9:16 and 1:1.
+- Timeline overview with audio, visual and text lanes.
+- Browser-side recording of the live canvas plus the audio track. The editor selects MP4 only when the browser advertises a compatible MP4 MediaRecorder codec; otherwise it exports WebM and clearly identifies the actual file format.
 
-## Not yet implemented
+All imported audio and background media stay in the browser; this version does not upload media to a server.
 
-The current editor shell is not yet a complete CapCut-style timeline editor. In particular, these capabilities remain in the roadmap:
+## Export limitations (important)
 
-- Transport controls and frame-accurate seeking.
-- Background image/video compositing and cover-art layers.
-- Text/logo overlays and multiple tracks.
-- New classic spectrum, waveform and oscilloscope presets.
-- Final video export with synchronized audio. The upstream export package currently encodes video frames; a tested muxing stage is still required to create a finished music video.
-- Full browser end-to-end validation across GPU backends and low-memory devices.
-
-See [GitHub Issues](https://github.com/monsterdevsocialking/WAVORA/issues) for the implementation roadmap.
+The current export records the composition in real time, so export duration is approximately the length of the music and the page must remain open. MP4 availability depends on the browser's MediaRecorder/H.264 support. On browsers without it, the output is WebM. This is not yet a server-side, offline, frame-accurate export pipeline; 4K, selectable 60 FPS, multi-clip editing, transition/keyframe controls, lyrics/subtitles, and a project save/load format remain future work.
 
 ## Development
 
-Requirements:
-
-- Node.js 20.19+ (Node.js 22 is used in CI and Vercel)
-- pnpm 9.15.4
-
-Install and run:
+Requirements: Node.js 20.19+ and pnpm 9.15.4.
 
 ```bash
 corepack enable
@@ -44,26 +32,8 @@ pnpm install --frozen-lockfile
 pnpm --filter @wavora/studio dev
 ```
 
-Quality gates:
+Quality gates: `pnpm build`, `pnpm typecheck`, `pnpm lint`, `pnpm test`.
 
-```bash
-pnpm build
-pnpm typecheck
-pnpm lint
-pnpm test
-pnpm licenses list --recursive --json --long
-```
+## Architecture and attribution
 
-## Architecture
-
-This repository preserves the upstream monorepo and its package boundaries:
-
-- `packages/core` — audio DSP, feature extraction, director, renderer and export primitives.
-- `packages/react` — React lifecycle integration for the core visualizer.
-- `packages/presets` — the upstream visualizer/preset catalog.
-- `packages/export` — offline frame rendering and WebCodecs encoding.
-- `apps/gallery` — the WAVORA Studio web application (workspace name: `@wavora/studio`).
-
-## Licensing
-
-The upstream MIT license and copyright notices are preserved. See [THIRD-PARTY-NOTICES.md](./THIRD-PARTY-NOTICES.md) for the resolved dependency-license inventory and attribution notes.
+The original Cymatic monorepo, package boundaries and MIT license remain preserved. The app reuses the upstream audio visualization concepts and workspace foundation while adding a music-focused composition interface. See [UPSTREAM-README.md](./UPSTREAM-README.md) and [THIRD-PARTY-NOTICES.md](./THIRD-PARTY-NOTICES.md) for upstream and dependency attribution.
