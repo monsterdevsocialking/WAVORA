@@ -8,16 +8,16 @@ import {
   type JSX,
 } from "react";
 
-import { version as coreVersion } from "@cymatic/core";
-import { allPresets } from "@cymatic/presets";
-import { Visualizer, type VisualizerRef } from "@cymatic/react";
-import type { DirectorState, ParamSet, Preset, PresetDefinition } from "@cymatic/core";
+import { version as coreVersion } from "@WAVORA/core";
+import { allPresets } from "@WAVORA/presets";
+import { Visualizer, type VisualizerRef } from "@WAVORA/react";
+import type { DirectorState, ParamSet, Preset, PresetDefinition } from "@WAVORA/core";
 
 import { ControlPanel } from "./ControlPanel.js";
 import { buildSnippet } from "./snippet.js";
 
-const DOCS_URL = "https://github.com/coreyepstein/cymatic#readme";
-const GITHUB_URL = "https://github.com/coreyepstein/cymatic";
+const DOCS_URL = "https://github.com/monsterdevsocialking/WAVORA#readme";
+const GITHUB_URL = "https://github.com/monsterdevsocialking/WAVORA";
 
 /** The current audio input the gallery is feeding the visualizer. */
 type InputMode =
@@ -41,6 +41,26 @@ async function decodeFile(file: File): Promise<AudioBuffer> {
   } finally {
     void ctx.close();
   }
+}
+
+/** Build a lightweight peak waveform from the decoded audio without copying the track. */
+function buildWaveform(buffer: AudioBuffer, bars = 88): number[] {
+  const channel = buffer.getChannelData(0);
+  const samplesPerBar = Math.max(1, Math.floor(channel.length / bars));
+  return Array.from({ length: bars }, (_, index) => {
+    const start = index * samplesPerBar;
+    const end = Math.min(channel.length, start + samplesPerBar);
+    let peak = 0;
+    for (let sample = start; sample < end; sample++) {
+      peak = Math.max(peak, Math.abs(channel[sample] ?? 0));
+    }
+    return Math.max(0.06, peak);
+  });
+}
+
+function formatTime(seconds: number): string {
+  const safe = Math.max(0, Math.floor(seconds));
+  return `${Math.floor(safe / 60)}:${String(safe % 60).padStart(2, "0")}`;
 }
 
 /** Detect whether any GPU canvas backend is plausibly available. */
@@ -77,7 +97,6 @@ export function App(): JSX.Element {
   const [input, setInput] = useState<InputMode>({ kind: "none" });
   const [inputError, setInputError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   // Director controls + HUD state (V2-14). The live DirectorState is fed back
   // from the engine via onDirectorState (throttled below); the toggle + seed are
@@ -111,9 +130,9 @@ export function App(): JSX.Element {
 
   const backendAvailable = useMemo(hasRenderBackend, []);
 
-  const snippet = useMemo(
-    () => buildSnippet(selectedId || "geometric.op-grid"),
-    [selectedId],
+  const waveform = useMemo(
+    () => (input.kind === "file" ? buildWaveform(input.buffer) : []),
+    [input],
   );
 
   const handleFile = useCallback(async (file: File) => {
@@ -144,18 +163,6 @@ export function App(): JSX.Element {
     setInputError(null);
     setInput({ kind: "mic" });
   }, []);
-
-  const copySnippet = useCallback(() => {
-    const done = (): void => {
-      setCopied(true);
-      window.setTimeout(() => setCopied(false), 1600);
-    };
-    if (navigator.clipboard?.writeText) {
-      navigator.clipboard.writeText(snippet).then(done).catch(() => {
-        /* clipboard blocked — silently ignore */
-      });
-    }
-  }, [snippet]);
 
   // Surface a setup error from the engine without crashing. We poll the
   // imperative handle since the ref does not re-render. An engine error can come
@@ -196,12 +203,12 @@ export function App(): JSX.Element {
     <div className="app">
       <header className="header">
         <div className="brand">
-          <h1>cymatic</h1>
-          <span className="tagline">a tasteful web audio visualizer</span>
+          <h1><span className="brand-mark">W</span> WAVORA</h1>
+          <span className="tagline">Transforma música em movimento.</span>
         </div>
         <nav className="header-links">
           <a href={DOCS_URL} target="_blank" rel="noreferrer">
-            Docs
+            Sobre
           </a>
           <a href={GITHUB_URL} target="_blank" rel="noreferrer">
             GitHub
@@ -211,7 +218,7 @@ export function App(): JSX.Element {
 
       <aside className="sidebar">
         <div className="sidebar-title">
-          Presets · {presets.length}
+          Visualizadores · {presets.length}
         </div>
         <ul className="preset-list">
           {presets.map((def) => (
@@ -261,10 +268,9 @@ export function App(): JSX.Element {
               <div className="status-card error">
                 <h3>No graphics backend available</h3>
                 <p>
-                  This browser does not expose WebGPU or WebGL, so the live
-                  canvas cannot render. The preset catalog and install snippets
-                  below still work — try a hardware-accelerated browser to see
-                  cymatic in motion.
+                  Este navegador não disponibiliza WebGPU nem WebGL. O preview
+                  precisa de aceleração gráfica para funcionar. Ativa a aceleração
+                  de hardware ou experimenta outro navegador.
                 </p>
               </div>
             </div>
@@ -279,7 +285,7 @@ export function App(): JSX.Element {
                 directorEnabled={directorEnabled}
                 directorSeed={seed}
                 onDirectorState={onDirectorState}
-                ariaLabel={`${selectedDef?.name ?? "cymatic"} visualizer`}
+                ariaLabel={`${selectedDef?.name ?? "WAVORA"} visualizer`}
               />
               <ControlPanel
                 getParamSet={getParamSet}
@@ -330,14 +336,14 @@ export function App(): JSX.Element {
             className="btn"
             onClick={() => fileInputRef.current?.click()}
           >
-            Choose audio file
+            Importar música
           </button>
           <button
             type="button"
             className={`btn${micActive ? " primary active" : " primary"}`}
             onClick={useMic}
           >
-            {micActive ? "Microphone live" : "Use microphone"}
+            {micActive ? "Microfone ativo" : "Ativar microfone"}
           </button>
           <input
             ref={fileInputRef}
@@ -366,46 +372,40 @@ export function App(): JSX.Element {
             ) : input.kind === "mic" ? (
               <>
                 <span className="dot live" />
-                Listening to microphone
+                A captar áudio do microfone
               </>
             ) : input.kind === "file" ? (
               <>
                 <span className="dot live" />
-                Playing {input.name}
+                A reproduzir {input.name}
               </>
             ) : (
               <>
                 <span className="dot" />
-                Drop a track here, pick a file, or use the mic
+                Arrasta uma música, importa um ficheiro ou ativa o microfone
               </>
             )}
           </span>
         </div>
 
-        <div className="snippet">
-          <div className="snippet-header">
-            <h4>Install &amp; usage</h4>
-            <button
-              type="button"
-              className={`copy-btn${copied ? " copied" : ""}`}
-              onClick={copySnippet}
-            >
-              {copied ? "Copied" : "Copy"}
-            </button>
+        <section className="timeline" aria-label="Timeline de áudio">
+          <div className="timeline-head">
+            <div>
+              <h4>Timeline</h4>
+              <p>{input.kind === "file" ? input.name : input.kind === "mic" ? "Entrada de microfone em direto" : "Importa uma música para começar"}</p>
+            </div>
+            <span className="engine-version">Motor {coreVersion}</span>
           </div>
-          <pre>
-            <code>{snippet}</code>
-          </pre>
-          <p
-            style={{
-              margin: "0 20px 16px",
-              fontSize: "0.72rem",
-              color: "var(--fg-faint)",
-            }}
-          >
-            cymatic core {coreVersion}
-          </p>
-        </div>
+          <div className={`waveform${waveform.length ? " populated" : ""}`} role="img" aria-label={waveform.length ? "Forma de onda do áudio importado" : "A timeline será apresentada depois de importar áudio"}>
+            {waveform.length ? waveform.map((level, index) => (
+              <span key={index} style={{ height: `${Math.round(level * 100)}%` }} />
+            )) : <span className="waveform-empty">A tua forma de onda aparecerá aqui</span>}
+          </div>
+          <div className="timeline-foot">
+            <span>{input.kind === "file" ? "ÁUDIO PRINCIPAL" : input.kind === "mic" ? "MICROFONE" : "SEM FAIXA"}</span>
+            <span>{input.kind === "file" ? formatTime(input.buffer.duration) : "00:00"}</span>
+          </div>
+        </section>
       </section>
     </div>
   );
